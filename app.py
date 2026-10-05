@@ -8,6 +8,77 @@ from crewai import Agent, Task, Crew, Process, LLM
 
 llm = LLM(import os
 from crewai import Agent, Task, Crew, Process, LLM
+import os
+from crewai import Agent, Task, Crew, Process, LLM
+
+llm = LLM(
+    model="gemini/gemini-2.0-flash",
+)
+
+# 1. Voiceover Scriptwriter & Director Agent
+scriptwriter = Agent(
+    role="Voiceover Scriptwriter & Director",
+    goal="Write engaging, retention-focused YouTube scripts with clear narration and visual cues.",
+    backstory="You are a seasoned YouTube scriptwriter and creative director. You know how to hook viewers in the first 5 seconds, maintain pacing, and structure videos for maximum watch time.",
+    verbose=True,
+    allow_delegation=False,
+    llm=llm
+)
+
+# 2. Thumbnail & Visual Strategist Agent
+visual_strategist = Agent(
+    role="Thumbnail & Visual Strategist",
+    goal="Design high-CTR thumbnail concepts and visually compelling scene ideas that match the script.",
+    backstory="You are a digital artist and YouTube packaging expert. You analyze trending visual styles, color contrast, and emotional triggers to create thumbnail concepts that get clicks.",
+    verbose=True,
+    allow_delegation=False,
+    llm=llm
+)
+
+# 3. YouTube SEO & Metadata Specialist Agent
+seo_specialist = Agent(
+    role="YouTube SEO & Metadata Specialist",
+    goal="Optimize video titles, descriptions, and tags for YouTube search and recommendation algorithms.",
+    backstory="You are a YouTube algorithm strategist. You specialize in keyword research, crafting click-worthy yet non-clickbait titles, and writing SEO-optimized descriptions.",
+    verbose=True,
+    allow_delegation=False,
+    llm=llm
+)
+
+# Define Tasks
+
+task1 = Task(
+    description="Write a complete YouTube script on the topic: 'The Future of AI Agents in 2025'. Include hooks, section transitions, and visual/audio cues.",
+    expected_output="A full video script with timestamped sections, visual notes, and voiceover text.",
+    agent=scriptwriter
+)
+
+task2 = Task(
+    description="Based on the script, create 3 thumbnail concepts (with text overlays and visual descriptions) and scene-by-scene visual suggestions.",
+    expected_output="3 distinct thumbnail ideas with title pairings and visual composition details.",
+    agent=visual_strategist
+)
+
+task3 = Task(
+    description="Create 5 optimized video titles, an SEO-friendly description with timestamps, and 15 relevant tags for the video.",
+    expected_output="5 high-CTR titles, a description draft with chapters, and a list of target tags.",
+    agent=seo_specialist
+)
+
+# Form the Crew
+youtube_crew = Crew(
+    agents=[scriptwriter, visual_strategist, seo_specialist],
+    tasks=[task1, task2, task3],
+    process=Process.sequential,
+    verbose=True
+)
+
+if __name__ == "__main__":
+    result = youtube_crew.kickoff()
+    print("\n\n########################")
+    print("## YOUTUBE CREW RESULTS ##")
+    print("########################\n")
+    print(result)
 
 llm = LLM(
     model="gemini/gemini-2.0-flash",
